@@ -4,7 +4,7 @@ import streamlit as st
 
 # Show the page title and description.
 st.set_page_config(page_title="Movies dataset", page_icon="🎬")
-st.title("🎬 Movies dataset")
+st.title("🎬 *Movies dataset*")
 st.write(
     """
     This app visualizes data from [The Movie Database (TMDB)](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata).
@@ -23,21 +23,22 @@ def load_data():
 
 
 df = load_data()
+st.dataframe()
 
 # Show a multiselect widget with the genres using `st.multiselect`.
 genres = st.multiselect(
     "Genres",
     df.genre.unique(),
-    ["Action", "Adventure", "Biography", "Comedy", "Drama", "Horror"],
+    ["Action", "Crime", "Thriller", "Comedy", "Drama", "Horror"],
 )
 
 # Show a slider widget with the years using `st.slider`.
-years = st.slider("Years", 1986, 2006, (2000, 2016))
+years = st.slider("Years", 1985, 2007, (2000, 2016))
 
 # Filter the dataframe based on the widget input and reshape it.
 df_filtered = df[(df["genre"].isin(genres)) & (df["year"].between(years[0], years[1]))]
 df_reshaped = df_filtered.pivot_table(
-    index="year", columns="genre", values="gross", aggfunc="sum", fill_value=0
+    index="year", columns="genre", values="imdb_score", aggfunc="sum", fill_value=0
 )
 df_reshaped = df_reshaped.sort_values(by="year", ascending=False)
 
@@ -58,7 +59,7 @@ chart = (
     .mark_line()
     .encode(
         x=alt.X("year:N", title="Year"),
-        y=alt.Y("popularity:Q", title="Gross earnings ($)"),
+        y=alt.Y("popularity:Q", title="IMDB_Score"),
         color="genre:N",
     )
     .properties(height=420)
